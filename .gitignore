@@ -1,2 +1,5 @@
 .env
 *.DS_Store
+*.csv
+package-lock.json
+node_modules/
