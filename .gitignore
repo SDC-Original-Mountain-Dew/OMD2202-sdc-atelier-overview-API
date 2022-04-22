@@ -3,3 +3,4 @@
 *.csv
 package-lock.json
 node_modules/
+HR-SDC.code-workspace
