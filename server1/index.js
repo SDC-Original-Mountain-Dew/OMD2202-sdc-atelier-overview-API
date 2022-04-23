@@ -21,6 +21,8 @@ app.get('/products', function (req, res) { // listens to this url then invokes d
   getProducts((err, data) => {
     if (err) {
       console.log(err);
+      res.status(404);
+      res.send({});
     } else {
       res.send(data);
     }
@@ -28,13 +30,28 @@ app.get('/products', function (req, res) { // listens to this url then invokes d
 });
 
 app.get('/products/:product_id', function (req, res) {
-  console.log(req.params);
-  res.send('gimme features');
+  getFeatures(req.params.product_id.slice(1) ,(err, data) => {
+    if (err) {
+      console.log(err);
+      res.status(404);
+      res.send({});
+    } else {
+      res.send(data);
+    }
+  });
 });
 
 app.get('/products/:product_id/styles', function (req, res) {
-  console.log(req.params);
-  res.send('gimme styles');
+  getStyles(req.params.product_id.slice(1), (err, data) => {
+
+    if (err) {
+      console.log(err);
+      res.status(404);
+      res.send({});
+    } else {
+      res.send(data);
+    }
+  });
 });
 
 
@@ -43,3 +60,4 @@ app.listen(process.env.PORT1);
 console.log(`Running at http://localhost:${process.env.PORT1}`);
 
 // http://localhost:3004/products/:product_id=65631
+// http://localhost:3004/products/:1
