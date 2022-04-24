@@ -8,7 +8,7 @@ MISSION GOAL IS SPPPEEEEEEDDD
 
 const Pool = require('pg').Pool;
 
-const pool = new Pool({ // is this efficient?
+const pool = new Pool({
   user: 'bogdan',
   host: 'localhost',
   database: 'overview',
@@ -16,19 +16,32 @@ const pool = new Pool({ // is this efficient?
   port: 5432,
 })
 
+
+
+
+/*
+QUERY FOR GETTING 10 RANDOM PRODUCTS
+*/
 var getProducts = (cb) => {
-  pool.query('SELECT * FROM products', (error, results) => {
+  pool.query('SELECT * FROM products ORDER BY random() LIMIT 10', (error, results) => {
 
     if (error) {
       cb(error);
-    } else { // format the results here???
+    } else {
       cb(null, results.rows);
     }
 
   });
 }
 
-var getFeatures = (num, cb) => { // asking for a product and it's features
+
+
+
+/*
+QUERY FOR GETTING ALL OF PRODUCT WITH ID num
+THEN QUERY FOR ALL FEATURES FOR PRODUCT WITH ID num
+*/
+var getFeatures = (num, cb) => {
   var obj = {};
 
   pool.query(`SELECT * FROM products WHERE product_id = ${num}`, (error, results) => {
@@ -41,7 +54,6 @@ var getFeatures = (num, cb) => { // asking for a product and it's features
     }
 
   });
-
 
   var cb4 = function (n) {
     pool.query(`SELECT feature_name, feature_value FROM products JOIN features ON (products.product_id = features.product_id) WHERE products.product_id = ${num} OR features.product_id = ${num}`, (error, results) => {
@@ -57,9 +69,18 @@ var getFeatures = (num, cb) => { // asking for a product and it's features
   }
 }
 
-var getStyles = (num, cb) => { // asking for a product and it's styles and the styles' photos and inventory
+
+
+
+/*
+QUERY FOR GETTING ALL STYLES FOR A PRODUCT WITH ID num
+THEN QUERY FOR GETTING ALL PHOTOS FOR A STYLE WITH ID obj.results[n].style_id
+AND LASTLY ALL SIZES PLUS QUANTITY FOR A STYLE WITH ID obj.results[n].style_id
+*/
+var getStyles = (id, cb) => {
+  console.log('getting stlyes\n\n')
   var obj = {
-    'product_id': num,
+    'product_id': id,
     'results': []
   }
 
@@ -67,145 +88,83 @@ var getStyles = (num, cb) => { // asking for a product and it's styles and the s
   var done2 = false;
   var sent = false;
 
-  pool.query(`SELECT style_id, style_name, style_price_sale, style_price, style_default FROM products JOIN styles ON (products.product_id = styles.product_id) WHERE products.product_id = ${num} OR styles.product_id = ${num}`, (error, results) => {
+  pool.query(`SELECT style_id, style_name, style_price_sale, style_price, style_default FROM styles WHERE styles.product_id = ${id}`, (error, results) => {
 
     if (error) {
       cb(error);
     } else {
-      obj.results = results.rows;
-      if (obj.results.length === 0) {
+
+      if (results.rows.length === 0) {
         cb(null, obj);
+        return;
       }
 
+      obj.results = results.rows;
+
       for (var n = 0; n <= obj.results.length - 1; n++) {
-        cb2(n);
-        cb3(n);
+        console.log(`--- RUNNING QUERIES ${n} ---`);
+
+        (async function (num) {
+          console.log(`BEGUN photos-${num}`);
+          pool.query(`SELECT photo_url, photo_thumbnail_url FROM photos WHERE photos.style_id = ${obj.results[num].style_id}`, (error, results) => {
+
+            if (error) {
+              cb(error);
+            } else {
+              console.log(`ENDED photos-${num}`);
+
+              obj.results[num].photos = results.rows;
+              if (num === obj.results.length - 1) {
+                done1 = true;
+              }
+
+              if (done2 && done1 && !sent) {
+                sent = true;
+                cb(null, obj);
+              }
+            }
+
+          });
+        }(n));
+
+        (async function (num) {
+          console.log(`BEGUN styles-${num}`);
+          pool.query(`SELECT stock_id, stock_name, stock_quantity FROM stock WHERE stock.style_id = ${obj.results[num].style_id}`, (error, results) => {
+
+            if (error) {
+              cb(error);
+            } else {
+              console.log(`ENDED styles-${num}`);
+
+              obj.results[num].skus = results.rows;
+              if (num === obj.results.length - 1) {
+                done2 = true;
+              }
+
+              if (done1 && done2 && !sent) {
+                sent = true;
+                cb(null, obj);
+              }
+            }
+
+          });
+        }(n));
+
       }
+
     }
 
   });
 
-  var cb2 = function (n) {
-    pool.query(`SELECT photo_url, photo_thumbnail_url FROM styles JOIN photos ON (styles.style_id = photos.style_id) WHERE styles.style_id = ${obj.results[n].style_id} OR photos.style_id = ${obj.results[n].style_id}`, (error, results) => {
-
-      if (error) {
-        cb(error);
-      } else {
-        obj.results[n].photos = results.rows;
-        if (n === obj.results.length - 1) {
-          done1 = true;
-        }
-
-        if (done1 && done2 && !sent) { // if cb2 query and cb3 query and data was not sent? make sent true and send the data;
-          sent = true;
-          cb(null, obj);
-        }
-      }
-
-    });
-  }
-
-  var cb3 = function (n) {
-    pool.query(`SELECT stock_id, stock_name, stock_quantity FROM styles JOIN stock ON (styles.style_id = stock.style_id) WHERE styles.style_id = ${obj.results[n].style_id} OR stock.style_id = ${obj.results[n].style_id}`, (error, results) => {
-
-      if (error) {
-        cb(error);
-      } else {
-        obj.results[n].skus = results.rows;
-        if (n === obj.results.length - 1) {
-          done2 = true;
-        }
-
-        if (done1 && done2 && !sent) { // if cb2 query and cb3 query and data was not sent? make sent true and send the data;
-          sent = true;
-          cb(null, obj);
-        }
-      }
-
-    });
-  }
-
 }
 
-// var getStyles = (num ,cb) => {
-//   var obj = {
-//     'product_id': num,
-//     'results': []
-//   }
-
-//   var done1 = false;
-//   var donr2 = false;
 
 
-//   pool.query(`SELECT style_id, style_name, style_price_sale, style_price, style_default FROM products JOIN styles ON (products.product_id = styles.product_id) WHERE products.product_id = ${num} OR styles.product_id = ${num}`, (error, results) => {
-
-//     if (error) {
-//       cb(error);
-//     } else {
-//       obj.results = results.rows;
-//        done1 = true;
-
-
-
-//       for (var n = 0; n <= obj.results.length - 1; n++) {
-//         console.log(counter);
-//         pool.query(`SELECT photo_url, photo_thumbnail_url FROM styles JOIN photos ON (styles.style_id = photos.style_id) WHERE styles.style_id = ${obj.results[n].style_id} OR photos.style_id = ${obj.results[n].style_id}`, (error, results) => {
-//           if (error) {
-//             cb(error);
-//           } else {
-//             console.log(results.rows);
-//             // obj.results[n].photos = results.rows;
-//             counter++;
-//           }
-//         });
-//       }
-
-
-
-
-
-
-//     }
-
-//   });
-
-
-//   while (!(done1 && done2)) { // holding the original javascript interperter hostage while the async querys have not finished
-//   }
-//   cb(null, obj);
-// }
-
-// var getStyles = (num ,cb) => {
-//   var obj = {
-//     'product_id': num,
-//     'results': []
-//   }
-
-//   pool.query(`SELECT style_id, style_name, style_price_sale, style_price, style_default FROM products JOIN styles ON (products.product_id = styles.product_id) WHERE products.product_id = ${num} OR styles.product_id = ${num}`, (error, results) => {
-
-//     if (error) {
-//       cb(error);
-//     } else {
-//       obj.results = results.rows;
-//       cb(null, obj);
-//     }
-
-//   });
-// }
 
 module.exports.getProducts = getProducts;
 module.exports.getFeatures = getFeatures;
 module.exports.getStyles = getStyles;
 
-
-// import { Client } from 'pg';
-
-// const client = new Client()
-// client.connect()
-// client.query('SELECT $1::text as message', ['Hello world!'], (err, res) => {
-//   console.log(err ? err.stack : res.rows[0].message) // Hello World!
-//   client.end()
-// })
 
 // SELECT * FROM products JOIN features ON (products.product_id = features.product_id) WHERE products.product_id = 5 OR features.product_id = 5;
 // SELECT * FROM products JOIN styles ON (products.product_id = styles.product_id) WHERE products.product_id = 5 OR styles.product_id = 5;
@@ -223,7 +182,6 @@ module.exports.getStyles = getStyles;
 //   "created_at": "2022-03-29T15:08:08.445Z",
 //   "updated_at": "2022-03-29T15:08:08.445Z"
 // }
-
 
 // // GET https://app-hrsei-api.herokuapp.com/api/fec2/rfp/products/65631
 // {

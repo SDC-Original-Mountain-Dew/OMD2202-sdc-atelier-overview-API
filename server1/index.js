@@ -43,7 +43,6 @@ app.get('/products/:product_id', function (req, res) {
 
 app.get('/products/:product_id/styles', function (req, res) {
   getStyles(req.params.product_id.slice(1), (err, data) => {
-
     if (err) {
       console.log(err);
       res.status(404);
@@ -61,3 +60,5 @@ console.log(`Running at http://localhost:${process.env.PORT1}`);
 
 // http://localhost:3004/products/:product_id=65631
 // http://localhost:3004/products/:1
+// \i server1/db/seeder2.sql
+// \i server1/db/schema.sql
