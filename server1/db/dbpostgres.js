@@ -29,18 +29,35 @@ var getProducts = (cb) => {
 }
 
 var getFeatures = (num, cb) => { // asking for a product and it's features
-  pool.query(`SELECT * FROM products JOIN features ON (products.product_id = features.product_id) WHERE products.product_id = ${num} OR features.product_id = ${num}`, (error, results) => {
+  var obj = {};
+
+  pool.query(`SELECT * FROM products WHERE product_id = ${num}`, (error, results) => {
 
     if (error) {
       cb(error);
     } else {
-      cb(null, results.rows);
+      obj = results.rows[0];
+      cb4(num);
     }
 
   });
+
+
+  var cb4 = function (n) {
+    pool.query(`SELECT feature_name, feature_value FROM products JOIN features ON (products.product_id = features.product_id) WHERE products.product_id = ${num} OR features.product_id = ${num}`, (error, results) => {
+
+      if (error) {
+        cb(error);
+      } else {
+        obj.features = results.rows;
+        cb(null, obj);
+      }
+
+    });
+  }
 }
 
-var getStyles = (num ,cb) => { // asking for a product and it's styles and the styles' photos and inventory
+var getStyles = (num, cb) => { // asking for a product and it's styles and the styles' photos and inventory
   var obj = {
     'product_id': num,
     'results': []
@@ -56,6 +73,9 @@ var getStyles = (num ,cb) => { // asking for a product and it's styles and the s
       cb(error);
     } else {
       obj.results = results.rows;
+      if (obj.results.length === 0) {
+        cb(null, obj);
+      }
 
       for (var n = 0; n <= obj.results.length - 1; n++) {
         cb2(n);
@@ -65,7 +85,7 @@ var getStyles = (num ,cb) => { // asking for a product and it's styles and the s
 
   });
 
-  var cb2 = function(n) {
+  var cb2 = function (n) {
     pool.query(`SELECT photo_url, photo_thumbnail_url FROM styles JOIN photos ON (styles.style_id = photos.style_id) WHERE styles.style_id = ${obj.results[n].style_id} OR photos.style_id = ${obj.results[n].style_id}`, (error, results) => {
 
       if (error) {
@@ -85,7 +105,7 @@ var getStyles = (num ,cb) => { // asking for a product and it's styles and the s
     });
   }
 
-  var cb3 = function(n) {
+  var cb3 = function (n) {
     pool.query(`SELECT stock_id, stock_name, stock_quantity FROM styles JOIN stock ON (styles.style_id = stock.style_id) WHERE styles.style_id = ${obj.results[n].style_id} OR stock.style_id = ${obj.results[n].style_id}`, (error, results) => {
 
       if (error) {
@@ -153,6 +173,24 @@ var getStyles = (num ,cb) => { // asking for a product and it's styles and the s
 //   while (!(done1 && done2)) { // holding the original javascript interperter hostage while the async querys have not finished
 //   }
 //   cb(null, obj);
+// }
+
+// var getStyles = (num ,cb) => {
+//   var obj = {
+//     'product_id': num,
+//     'results': []
+//   }
+
+//   pool.query(`SELECT style_id, style_name, style_price_sale, style_price, style_default FROM products JOIN styles ON (products.product_id = styles.product_id) WHERE products.product_id = ${num} OR styles.product_id = ${num}`, (error, results) => {
+
+//     if (error) {
+//       cb(error);
+//     } else {
+//       obj.results = results.rows;
+//       cb(null, obj);
+//     }
+
+//   });
 // }
 
 module.exports.getProducts = getProducts;
