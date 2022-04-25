@@ -56,7 +56,7 @@ var getFeatures = (num, cb) => {
   });
 
   var cb4 = function (n) {
-    pool.query(`SELECT feature_name, feature_value FROM products JOIN features ON (products.product_id = features.product_id) WHERE products.product_id = ${num} OR features.product_id = ${num}`, (error, results) => {
+    pool.query(`SELECT feature_name, feature_value FROM features WHERE features.product_id = ${n}`, (error, results) => {
 
       if (error) {
         cb(error);
