@@ -41,32 +41,33 @@ var getProducts = (cb) => {
 QUERY FOR GETTING ALL OF PRODUCT WITH ID num
 THEN QUERY FOR ALL FEATURES FOR PRODUCT WITH ID num
 */
-var getFeatures = (num, cb) => {
+var getFeatures = (id, cb) => {
   var obj = {};
 
-  pool.query(`SELECT * FROM products WHERE product_id = ${num}`, (error, results) => {
+  pool.query(`SELECT * FROM products WHERE product_id = ${id}`, (error, results) => {
 
     if (error) {
       cb(error);
     } else {
       obj = results.rows[0];
-      cb4(num);
+
+      (async function (id) {
+        pool.query(`SELECT feature_name, feature_value FROM features WHERE features.product_id = ${id}`, (error, results) => {
+
+          if (error) {
+            cb(error);
+          } else {
+            obj.features = results.rows;
+            cb(null, obj);
+          }
+
+        });
+      }(id));
+
     }
 
   });
 
-  var cb4 = function (n) {
-    pool.query(`SELECT feature_name, feature_value FROM features WHERE features.product_id = ${n}`, (error, results) => {
-
-      if (error) {
-        cb(error);
-      } else {
-        obj.features = results.rows;
-        cb(null, obj);
-      }
-
-    });
-  }
 }
 
 
@@ -161,10 +162,31 @@ var getStyles = (id, cb) => {
 
 
 
+
+/*
+QUERY FOR GETTING ALL OF RELATED IDS WITH PRODUCT ID num
+*/
+var getRelated = (id, cb) => {
+  pool.query(`SELECT related_id FROM related WHERE product_id = ${id}`, (error, results) => {
+
+    if (error) {
+      cb(error);
+    } else {
+      obj = results.rows[0];
+      cb(null, results.rows);
+    }
+
+  });
+
+}
+
+
+
+
+
 module.exports.getProducts = getProducts;
 module.exports.getFeatures = getFeatures;
 module.exports.getStyles = getStyles;
-
 
 // SELECT * FROM products JOIN features ON (products.product_id = features.product_id) WHERE products.product_id = 5 OR features.product_id = 5;
 // SELECT * FROM products JOIN styles ON (products.product_id = styles.product_id) WHERE products.product_id = 5 OR styles.product_id = 5;

@@ -53,6 +53,21 @@ app.get('/products/:product_id/styles', function (req, res) {
   });
 });
 
+app.get('/products/:product_id/related', function (req, res) {
+  // getRelated(req.params.product_id.slice(1), (err, data) => {
+  //   if (err) {
+  //     console.log(err);
+  //     res.status(404);
+  //     res.send({});
+  //   } else {
+  //     res.send(data);
+  //   }
+  // });
+  res.send('gimme related');
+});
+
+
+
 
 
 app.listen(process.env.PORT1);
