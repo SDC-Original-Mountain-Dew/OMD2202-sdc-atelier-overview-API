@@ -79,7 +79,7 @@ THEN QUERY FOR GETTING ALL PHOTOS FOR A STYLE WITH ID obj.results[n].style_id
 AND LASTLY ALL SIZES PLUS QUANTITY FOR A STYLE WITH ID obj.results[n].style_id
 */
 var getStyles = (id, cb) => {
-  console.log('getting stlyes\n\n')
+  console.log(`---> STYLES ${id}`)
   var obj = {
     'product_id': id,
     'results': []
@@ -92,10 +92,12 @@ var getStyles = (id, cb) => {
   pool.query(`SELECT style_id, style_name, style_price_sale, style_price, style_default FROM styles WHERE styles.product_id = ${id}`, (error, results) => {
 
     if (error) {
+      console.log(`---> STYLES ${id} ---> ERR`)
       cb(error);
     } else {
 
       if (results.rows.length === 0) {
+        console.log(`---> STYLES ${id} ---> SENT`)
         cb(null, obj);
         return;
       }
@@ -103,16 +105,17 @@ var getStyles = (id, cb) => {
       obj.results = results.rows;
 
       for (var n = 0; n <= obj.results.length - 1; n++) {
-        console.log(`--- RUNNING QUERIES ${n} ---`);
+        // console.log(`--- RUNNING QUERIES ${n} ---`);
 
         (async function (num) {
-          console.log(`BEGUN photos-${num}`);
+          // console.log(`BEGUN photos-${num}`);
           pool.query(`SELECT photo_url, photo_thumbnail_url FROM photos WHERE photos.style_id = ${obj.results[num].style_id}`, (error, results) => {
 
             if (error) {
+              console.log(`---> STYLES ${id} ---> ERR`)
               cb(error);
             } else {
-              console.log(`ENDED photos-${num}`);
+              // console.log(`\tENDED photos-${num}`);
 
               obj.results[num].photos = results.rows;
               if (num === obj.results.length - 1) {
@@ -121,6 +124,7 @@ var getStyles = (id, cb) => {
 
               if (done2 && done1 && !sent) {
                 sent = true;
+                console.log(`---> STYLES ${id} ---> SENT`)
                 cb(null, obj);
               }
             }
@@ -129,13 +133,14 @@ var getStyles = (id, cb) => {
         }(n));
 
         (async function (num) {
-          console.log(`BEGUN styles-${num}`);
+          // console.log(`BEGUN styles-${num}`);
           pool.query(`SELECT stock_id, stock_name, stock_quantity FROM stock WHERE stock.style_id = ${obj.results[num].style_id}`, (error, results) => {
 
             if (error) {
+              console.log(`---> STYLES ${id} ---> ERR`)
               cb(error);
             } else {
-              console.log(`ENDED styles-${num}`);
+              // console.log(`\tENDED styles-${num}`);
 
               obj.results[num].skus = results.rows;
               if (num === obj.results.length - 1) {
@@ -144,6 +149,7 @@ var getStyles = (id, cb) => {
 
               if (done1 && done2 && !sent) {
                 sent = true;
+                console.log(`---> STYLES ${id} ---> SENT`)
                 cb(null, obj);
               }
             }

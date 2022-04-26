@@ -46,7 +46,7 @@ CREATE TABLE stock (
   CONSTRAINT fk_style FOREIGN KEY(style_id) REFERENCES styles(style_id)
 );
 
--- CREATE INDEX index_feature_product_id on features(product_id);
--- CREATE INDEX index_style_product_id on styles(product_id);
--- CREATE INDEX index_photo_style_id on photos(style_id);
+CREATE INDEX index_feature_product_id on features(product_id);
+CREATE INDEX index_style_product_id on styles(product_id);
+CREATE INDEX index_photo_style_id on photos(style_id);
 CREATE INDEX index_stock_style_id on stock(style_id);
