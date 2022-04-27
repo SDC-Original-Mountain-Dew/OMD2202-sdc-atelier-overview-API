@@ -17,7 +17,10 @@ const app = express();
 app.use(express.json());
 
 
+
 app.get('/products', function (req, res) { // listens to this url then invokes db functions to get data // gimme products
+  console.log('\n\n',req,'\n\n');
+
   getProducts((err, data) => {
     if (err) {
       console.log(err);
@@ -30,7 +33,9 @@ app.get('/products', function (req, res) { // listens to this url then invokes d
 });
 
 app.get('/products/:product_id', function (req, res) {
-  getFeatures(req.params.product_id.slice(1) ,(err, data) => {
+  console.log('\n\n',req,'\n\n');
+
+  getFeatures(req.params.product_id ,(err, data) => {
     if (err) {
       console.log(err);
       res.status(404);
@@ -42,7 +47,7 @@ app.get('/products/:product_id', function (req, res) {
 });
 
 app.get('/products/:product_id/styles', function (req, res) {
-  getStyles(req.params.product_id.slice(1), (err, data) => {
+  getStyles(req.params.product_id, (err, data) => {
     if (err) {
       console.log(err);
       res.status(404);
@@ -54,7 +59,9 @@ app.get('/products/:product_id/styles', function (req, res) {
 });
 
 app.get('/products/:product_id/related', function (req, res) {
-  // getRelated(req.params.product_id.slice(1), (err, data) => {
+  console.log('\n--------------------------------------------------------------------------------------------------------------------------------------------\n', req,'\n--------------------------------------------------------------------------------------------------------------------------------------------\n');
+
+  // getRelated(req.params.product_id, (err, data) => {
   //   if (err) {
   //     console.log(err);
   //     res.status(404);
@@ -76,4 +83,4 @@ console.log(`Running at http://localhost:${process.env.PORT1}`);
 // http://localhost:3004/products/:product_id=65631
 // http://localhost:3004/products/:1
 // \i server1/db/seeder2.sql
-// \i server1/db/schema.sql
+// \i server1/db/schema.sql\q

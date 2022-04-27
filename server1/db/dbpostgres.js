@@ -6,16 +6,19 @@ out postgres database methods and functions for querying
 MISSION GOAL IS SPPPEEEEEEDDD
 */
 
+require("dotenv").config();
+
 const Pool = require('pg').Pool;
 
 const pool = new Pool({
-  user: 'bogdan',
+  user: process.env.DB_USER,
   host: 'localhost',
   database: 'overview',
-  password: '',
-  port: 5432,
+  password: process.env.DB_PASS,
+  port: process.env.DB_PORT,
 })
 
+// console.log('\n\n',pool,'\n\n')
 
 
 
@@ -23,11 +26,14 @@ const pool = new Pool({
 QUERY FOR GETTING 10 RANDOM PRODUCTS
 */
 var getProducts = (cb) => {
+  console.log(`---> PRODUCTS`)
   pool.query('SELECT * FROM products ORDER BY random() LIMIT 10', (error, results) => {
 
     if (error) {
+      console.log(`---> PRODUCTS ---> ERR`)
       cb(error);
     } else {
+      console.log(`---> PRODUCTS ---> SENT`)
       cb(null, results.rows);
     }
 
@@ -42,11 +48,14 @@ QUERY FOR GETTING ALL OF PRODUCT WITH ID num
 THEN QUERY FOR ALL FEATURES FOR PRODUCT WITH ID num
 */
 var getFeatures = (id, cb) => {
+  console.log(`---> FEATURES ${id}`)
+
   var obj = {};
 
   pool.query(`SELECT * FROM products WHERE product_id = ${id}`, (error, results) => {
 
     if (error) {
+      console.log(`---> FEATURES ${id} ---> ERR`)
       cb(error);
     } else {
       obj = results.rows[0];
@@ -58,6 +67,7 @@ var getFeatures = (id, cb) => {
             cb(error);
           } else {
             obj.features = results.rows;
+            console.log(`---> FEATURES ${id} ---> SENT`)
             cb(null, obj);
           }
 

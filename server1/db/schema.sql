@@ -50,3 +50,5 @@ CREATE INDEX index_feature_product_id on features(product_id);
 CREATE INDEX index_style_product_id on styles(product_id);
 CREATE INDEX index_photo_style_id on photos(style_id);
 CREATE INDEX index_stock_style_id on stock(style_id);
+
+-- scp -i "aws-fec.pem" ./../OMD2202-sdc-atelier-overview-API/product.csv ubuntu@13.57.16.20:/home/ubuntu/OMD2202-sdc-atelier-overview-API
