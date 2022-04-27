@@ -19,8 +19,6 @@ app.use(express.json());
 
 
 app.get('/products', function (req, res) { // listens to this url then invokes db functions to get data // gimme products
-  console.log('\n\n',req,'\n\n');
-
   getProducts((err, data) => {
     if (err) {
       console.log(err);
@@ -33,8 +31,6 @@ app.get('/products', function (req, res) { // listens to this url then invokes d
 });
 
 app.get('/products/:product_id', function (req, res) {
-  console.log('\n\n',req,'\n\n');
-
   getFeatures(req.params.product_id ,(err, data) => {
     if (err) {
       console.log(err);
