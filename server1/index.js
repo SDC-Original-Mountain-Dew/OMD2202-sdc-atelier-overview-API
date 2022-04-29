@@ -87,3 +87,5 @@ console.log(`Running at http://localhost:${process.env.PORT1}`);
 // sudo -u postgres psql
 // sudo systemctl restart postgresql.service
 // scp -i "aws-fec.pem" ./../OMD2202-sdc-atelier-overview-API/product.csv ubuntu@13.57.16.20:/home/ubuntu/OMD2202-sdc-atelier-overview-API
+// lsof -i tcp:3004
+// kill -9 PID
