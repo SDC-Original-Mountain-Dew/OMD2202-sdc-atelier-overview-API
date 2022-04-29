@@ -10,11 +10,8 @@ const express = require("express");
 const path = require("path");
 var axios = require('axios');
 
-
 const app = express();
 app.use(express.json());
-
-// process.env.url
 
 app.use(function (req, res) {
 
@@ -23,12 +20,13 @@ app.use(function (req, res) {
     method: 'get'
   }).then( function (response) {
 
-    res.send(response);
+    res.send(response.data);
 
   }).catch( function(error) {
 
     console.log(error);
-    res.send(error);
+    res.status(404);
+    res.send([]);
 
   });
 
