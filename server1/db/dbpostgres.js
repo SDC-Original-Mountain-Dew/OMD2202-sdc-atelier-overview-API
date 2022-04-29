@@ -26,6 +26,8 @@ const pool = new Pool({
 QUERY FOR GETTING 10 RANDOM PRODUCTS
 */
 var getProducts = (cb) => {
+  var obj = [];
+
   console.log(`---> PRODUCTS`)
   pool.query('SELECT * FROM products ORDER BY random() LIMIT 10', (error, results) => {
 
@@ -34,7 +36,16 @@ var getProducts = (cb) => {
       cb(error);
     } else {
       console.log(`---> PRODUCTS ---> SENT`)
-      cb(null, results.rows);
+
+      if (results.rows.length === 0) {
+        console.log(`---> PRODUCTS ---> SENT`)
+        cb(null, obj);
+        return;
+      }
+
+      obj = results.rows;
+
+      cb(null, obj);
     }
 
   });
@@ -48,9 +59,18 @@ QUERY FOR GETTING ALL OF PRODUCT WITH ID num
 THEN QUERY FOR ALL FEATURES FOR PRODUCT WITH ID num
 */
 var getFeatures = (id, cb) => {
-  console.log(`---> FEATURES ${id}`)
+  console.log(`---> FEATURES ${id}`);
+
+  if (isNaN(id)) {
+    console.log(`---> FEATURES ${id} ---> ERR`)
+    cb('id is not a number');
+    return;
+  }
 
   var obj = {};
+
+
+
 
   pool.query(`SELECT * FROM products WHERE product_id = ${id}`, (error, results) => {
 
@@ -58,6 +78,13 @@ var getFeatures = (id, cb) => {
       console.log(`---> FEATURES ${id} ---> ERR`)
       cb(error);
     } else {
+
+      if (results.rows.length === 0) {
+        console.log(`---> FEATURES ${id} ---> SENT`)
+        cb(null, obj);
+        return;
+      }
+
       obj = results.rows[0];
 
       (async function (id) {
@@ -66,6 +93,7 @@ var getFeatures = (id, cb) => {
           if (error) {
             cb(error);
           } else {
+
             obj.features = results.rows;
             console.log(`---> FEATURES ${id} ---> SENT`)
             cb(null, obj);
@@ -89,11 +117,15 @@ THEN QUERY FOR GETTING ALL PHOTOS FOR A STYLE WITH ID obj.results[n].style_id
 AND LASTLY ALL SIZES PLUS QUANTITY FOR A STYLE WITH ID obj.results[n].style_id
 */
 var getStyles = (id, cb) => {
-  console.log(`---> STYLES ${id}`)
-  var obj = {
-    'product_id': id,
-    'results': []
+  console.log(`---> STYLES ${id}`);
+
+  if (isNaN(id)) {
+    console.log(`---> STYLES ${id} ---> ERR`)
+    cb('id is not a number');
+    return;
   }
+
+  var obj = {};
 
   var done1 = false;
   var done2 = false;
@@ -112,6 +144,7 @@ var getStyles = (id, cb) => {
         return;
       }
 
+      obj.product_id = id;
       obj.results = results.rows;
 
       for (var n = 0; n <= obj.results.length - 1; n++) {

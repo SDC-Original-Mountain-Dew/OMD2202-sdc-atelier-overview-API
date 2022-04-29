@@ -17,13 +17,16 @@ const app = express();
 app.use(express.json());
 
 
+app.get('/loaderio-6976d26f2cb99fd28ef98a66f68d04e1.txt', function (req, res) {
+  res.send('loaderio-6976d26f2cb99fd28ef98a66f68d04e1');
+});
 
 app.get('/products', function (req, res) { // listens to this url then invokes db functions to get data // gimme products
   getProducts((err, data) => {
     if (err) {
       console.log(err);
       res.status(404);
-      res.send({});
+      res.send([]);
     } else {
       res.send(data);
     }
@@ -31,7 +34,7 @@ app.get('/products', function (req, res) { // listens to this url then invokes d
 });
 
 app.get('/products/:product_id', function (req, res) {
-  getFeatures(req.params.product_id ,(err, data) => {
+  getFeatures(req.params.product_id, (err, data) => {
     if (err) {
       console.log(err);
       res.status(404);
@@ -55,7 +58,7 @@ app.get('/products/:product_id/styles', function (req, res) {
 });
 
 app.get('/products/:product_id/related', function (req, res) {
-  console.log('\n--------------------------------------------------------------------------------------------------------------------------------------------\n', req,'\n--------------------------------------------------------------------------------------------------------------------------------------------\n');
+  console.log('\n--------------------------------------------------------------------------------------------------------------------------------------------\n', req, '\n--------------------------------------------------------------------------------------------------------------------------------------------\n');
 
   // getRelated(req.params.product_id, (err, data) => {
   //   if (err) {
@@ -79,4 +82,8 @@ console.log(`Running at http://localhost:${process.env.PORT1}`);
 // http://localhost:3004/products/:product_id=65631
 // http://localhost:3004/products/:1
 // \i server1/db/seeder2.sql
-// \i server1/db/schema.sql\q
+// \i server1/db/schema.sql
+// sudo iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 3004
+// sudo -u postgres psql
+// sudo systemctl restart postgresql.service
+// scp -i "aws-fec.pem" ./../OMD2202-sdc-atelier-overview-API/product.csv ubuntu@13.57.16.20:/home/ubuntu/OMD2202-sdc-atelier-overview-API
