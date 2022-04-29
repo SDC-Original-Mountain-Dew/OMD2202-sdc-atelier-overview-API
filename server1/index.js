@@ -26,7 +26,7 @@ app.get('/products', function (req, res) { // listens to this url then invokes d
     if (err) {
       console.log(err);
       res.status(404);
-      res.send(err);
+      res.send([]);
     } else {
       res.send(data);
     }
@@ -38,7 +38,7 @@ app.get('/products/:product_id', function (req, res) {
     if (err) {
       console.log(err);
       res.status(404);
-      res.send(err);
+      res.send({});
     } else {
       res.send(data);
     }
@@ -50,7 +50,7 @@ app.get('/products/:product_id/styles', function (req, res) {
     if (err) {
       console.log(err);
       res.status(404);
-      res.send(err);
+      res.send({});
     } else {
       res.send(data);
     }
