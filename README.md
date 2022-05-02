@@ -2,6 +2,7 @@
 This is an API that returns a list of products and a list about a product's information. Consists of NodeJS, Postgres SQL for database and Express for server communications
 
 ## Installation (Homebrew, Git, Node/NPM, PostgreSQL)
+Download and install these in the terminal:
 ```
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 brew install git
@@ -13,7 +14,7 @@ cd OMD2202-sdc-atelier-overview-API
 npm install
 ```
 ## Setup
-created a .env by running `touch .env` then edit the file with `vim .env`. Inside copy and paste this:
+Create a .env by running `touch .env` then edit the file with `vim .env` in the terminal. Inside copy and paste this:
 ```
 PORT1=3004
 PORT2=3005
@@ -23,7 +24,7 @@ DB_USER = postgres
 DB_PORT = 5432
 DB_PASS = ''
 ```
-created a .gitignore by running `touch .gitignore` then edit the file with `vim .gitignore`. Inside copy and paste this:
+Create a .gitignore by running `touch .gitignore` then edit the file with `vim .gitignore` inside the terminal. Inside copy and paste this:
 ```
 .env
 *.DS_Store
@@ -33,7 +34,7 @@ node_modules/
 *.pem
 *.json
 ```
-Download there .csv files from: https://drive.google.com/drive/folders/1Gqxt7Tw0I50OG2dn4LncHAJ_x_BnWuRX
+Download these .csv files from: https://drive.google.com/drive/folders/1Gqxt7Tw0I50OG2dn4LncHAJ_x_BnWuRX
 ```
 features.csv
 photos.csv
@@ -42,3 +43,10 @@ skus.csv
 styles.csv
 related.csv
 ```
+Create and seed the database by running these in the terminal and psql command line:
+```
+psql postgres
+\i server1/db/schema.sql
+\i server1/db/seeder2.sql
+```
+Than lastly start the express server by running `npm run start` back in the terminal
