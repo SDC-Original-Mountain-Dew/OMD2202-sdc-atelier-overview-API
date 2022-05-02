@@ -33,3 +33,12 @@ node_modules/
 *.pem
 *.json
 ```
+Download there .csv files from: https://drive.google.com/drive/folders/1Gqxt7Tw0I50OG2dn4LncHAJ_x_BnWuRX
+```
+features.csv
+photos.csv
+product.csv
+skus.csv
+styles.csv
+related.csv
+```
