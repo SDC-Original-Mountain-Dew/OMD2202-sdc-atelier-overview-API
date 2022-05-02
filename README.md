@@ -13,4 +13,13 @@ cd OMD2202-sdc-atelier-overview-API
 npm install
 ```
 ## Setup
-created a .env by running `touch .env` then edit the file with `vim .env`.
+created a .env by running `touch .env` then edit the file with `vim .env`. Inside copy and paste this:
+``
+PORT1=3004
+PORT2=3005
+
+DB_URL = localhost
+DB_USER = postgres
+DB_PORT = 5432
+DB_PASS = ''
+``
