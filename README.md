@@ -23,3 +23,13 @@ DB_USER = postgres
 DB_PORT = 5432
 DB_PASS = ''
 ```
+created a .gitignore by running `touch .gitignore` then edit the file with `vim .gitignore`. Inside copy and paste this:
+```
+.env
+*.DS_Store
+*.csv
+package-lock.json
+node_modules/
+*.pem
+*.json
+```
