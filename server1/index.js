@@ -89,3 +89,17 @@ console.log(`Running at http://localhost:${process.env.PORT1}`);
 // scp -i "aws-fec.pem" ./../OMD2202-sdc-atelier-overview-API/product.csv ubuntu@13.57.16.20:/home/ubuntu/OMD2202-sdc-atelier-overview-API
 // lsof -i tcp:3004
 // kill -9 PID
+
+// sudo apt-get update && sudu apt-get upgrade -y
+// curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+// sudo apt-get install -y nodejs
+
+// sudo apt-get install git
+
+
+// sudo apt update
+// udo apt install nginx
+
+// sudo systemctl start nginx
+
+// %{*:1-100}
